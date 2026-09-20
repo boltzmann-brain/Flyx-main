@@ -131,7 +131,9 @@ function decryptEconfig(b64: string): EconfigStream | null {
     if (!config || typeof config !== "object") return null;
     if (
       (config.stream_url !== undefined && typeof config.stream_url !== "string") ||
-      (config.stream_url_nop2p !== undefined && typeof config.stream_url_nop2p !== "string")
+      (config.stream_url_nop2p !== undefined && typeof config.stream_url_nop2p !== "string") ||
+      (config.url_nop2p !== undefined && typeof config.url_nop2p !== "boolean") ||
+      (config.p2p !== undefined && typeof config.p2p !== "boolean")
     ) {
       return null;
     }
