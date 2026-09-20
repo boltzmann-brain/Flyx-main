@@ -128,6 +128,13 @@ function decryptEconfig(b64: string): EconfigStream | null {
     const config = JSON.parse(
       Buffer.from(reordered.join(""), "base64").toString("utf8"),
     ) as EconfigStream;
+    if (!config || typeof config !== "object") return null;
+    if (
+      (config.stream_url !== undefined && typeof config.stream_url !== "string") ||
+      (config.stream_url_nop2p !== undefined && typeof config.stream_url_nop2p !== "string")
+    ) {
+      return null;
+    }
     if (!config.stream_url && !config.stream_url_nop2p) return null;
     return config;
   } catch {
@@ -285,9 +292,11 @@ export async function extractDLHD(
           ? `${allCookies}; ${daddyResult.cookies}`
           : daddyResult.cookies;
       }
-      m3u8Url =
-        extractM3U8FromSource(daddyResult.html) ??
-        extractEconfigM3U8(daddyResult.html);
+      m3u8Url = extractM3U8FromSource(daddyResult.html);
+      if (!m3u8Url) {
+        m3u8Url = extractEconfigM3U8(daddyResult.html);
+        if (m3u8Url) cdnReferer = "https://tiestep.top/";
+      }
     }
 
     if (m3u8Url) {
